@@ -14,11 +14,11 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => console.log('Connected to MongoDB'));
 
 const candidateSchema = new mongoose.Schema({
-    name: "ravi",
-    email: "ravi1234@gmail.com",
-    phone: "9956342624",
-    skills: "HTML,CSS,JS,PYTHON,REACT",
-    experience: "4 years",
+    name: String,
+    email: String ,
+    phone: String,
+    skills: [String],
+    experience: String,
     
 });
 

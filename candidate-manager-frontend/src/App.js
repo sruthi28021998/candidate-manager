@@ -13,11 +13,6 @@ const SearchInput = styled.input`
     width: 300px;
 `;
 
-const FilterButton = styled.button`
-    padding: 8px 15px;
-    margin-right: 10px;
-    cursor: pointer;
-`;
 
 const CandidateList = styled.ul`
     list-style: none;
@@ -30,11 +25,40 @@ const CandidateItem = styled.li`
     margin-bottom: 10px;
 `;
 
+
+const AddCandidateForm = styled.div`
+    margin-top: 20px;
+    border: 1px solid #eee;
+    padding: 15px;
+`;
+
+const InputField = styled.input`
+    display: block;
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 300px;
+`;
+
+const SubmitButton = styled.button`
+    padding: 10px 20px;
+    cursor: pointer;
+`;
+
+
 function App() {
     const [candidates, setCandidates] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredCandidates, setFilteredCandidates] = useState([]);
-    const [filters, setFilters] = useState({}); 
+    const [filters, setFilters] = useState({});
+    
+
+   
+    const [newName, setNewName] = useState('Pavan Kumar');
+    const [newEmail, setNewEmail] = useState('pavan.kumar1234@gmail.com');
+    const [newPhone, setNewPhone] = useState('9984357841');
+    const [newSkills, setNewSkills] = useState('Javascript,Python,Node.js');
+    const [newExperience, setNewExperience] = useState('5 years of full-stack development experience');
+    
 
     useEffect(() => {
         fetchCandidates();
@@ -70,6 +94,33 @@ function App() {
         
     };
 
+    
+    const handleSubmit = async (event) => {
+        event.preventDefault(); 
+
+        const newCandidate = {
+            name: newName,
+            email: newEmail,
+            phone: newPhone,
+            skills: newSkills.split(',').map(skill => skill.trim()), 
+            experience: newExperience,
+        };
+
+        try {
+            const response = await axios.post('http://localhost:5000/api/candidates', newCandidate);
+            console.log('Candidate added:', response.data);
+            fetchCandidates(); 
+            setNewName('');
+            setNewEmail('');
+            setNewPhone('');
+            setNewSkills('');
+            setNewExperience('');
+        } catch (error) {
+            console.error('Error adding candidate:', error);
+        }
+    };
+  
+
     return (
         <Container>
             <h1>Candidate Management</h1>
@@ -80,13 +131,7 @@ function App() {
                 onChange={handleSearch}
             />
 
-            <div>
-                
-                <FilterButton onClick={() => handleFilter('skills', 'React')}>Show React Skills</FilterButton>
-                <FilterButton onClick={() => handleFilter('experience', '2+ years')}>2+ Years Exp</FilterButton>
-                
-            </div>
-
+            
             <CandidateList>
                 {filteredCandidates.map(candidate => (
                     <CandidateItem key={candidate._id}>
@@ -95,10 +140,50 @@ function App() {
                         <strong>Phone:</strong> {candidate.phone}<br/>
                         <strong>Skills:</strong> {candidate.skills ? candidate.skills.join(', ') : 'N/A'}<br/>
                         <strong>Experience:</strong> {candidate.experience || 'N/A'}
-                       
                     </CandidateItem>
                 ))}
             </CandidateList>
+
+            
+            <AddCandidateForm>
+                <h2>Add New Candidate</h2>
+                <form onSubmit={handleSubmit}>
+                    <InputField
+                        type="text"
+                        placeholder="Name"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        required
+                    />
+                    <InputField
+                        type="email"
+                        placeholder="Email"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        required
+                    />
+                    <InputField
+                        type="tel"
+                        placeholder="Phone"
+                        value={newPhone}
+                        onChange={(e) => setNewPhone(e.target.value)}
+                    />
+                    <InputField
+                        type="text"
+                        placeholder="Skills (comma-separated)"
+                        value={newSkills}
+                        onChange={(e) => setNewSkills(e.target.value)}
+                    />
+                    <InputField
+                        type="text"
+                        placeholder="Experience"
+                        value={newExperience}
+                        onChange={(e) => setNewExperience(e.target.value)}
+                    />
+                    <SubmitButton type="submit">Add Candidate</SubmitButton>
+                </form>
+            </AddCandidateForm>
+            
         </Container>
     );
 }
